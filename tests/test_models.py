@@ -68,9 +68,10 @@ def test_student_profile_default_interests():
         year_of_study="1st Year",
     )
     assert profile.interests == []
-    assert profile.location == "Global"
+    # Location must be None when not provided by user to avoid fabricated data
+    assert profile.location is None
     assert profile.opportunity_type == OpportunityType.ALL
-    assert "General" in profile.summary()
+    assert "[Location Unspecified]" in profile.summary()
 
 
 def test_opportunity_validation(sample_opportunity: Opportunity):

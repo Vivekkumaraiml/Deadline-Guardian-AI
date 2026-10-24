@@ -22,6 +22,7 @@ class Settings:
     # uAgent & Agentverse settings
     AGENT_NAME: str = os.getenv("AGENT_NAME", "deadline_guardian_ai")
     AGENT_SEED: str = os.getenv("AGENT_SEED", "deadline_guardian_ai_fetchathon_2026_secret_seed_phrase")
+    AGENT_MAILBOX: bool = os.getenv("AGENT_MAILBOX", "true").lower() in ("true", "1", "yes")
     AGENTVERSE_MAILBOX_KEY: Optional[str] = os.getenv("AGENTVERSE_MAILBOX_KEY", "").strip() or None
     AGENT_PORT: int = int(os.getenv("AGENT_PORT", "8000"))
 

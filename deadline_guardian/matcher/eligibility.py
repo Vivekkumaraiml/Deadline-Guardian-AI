@@ -4,7 +4,7 @@ Compares a student profile against opportunity criteria, evaluates match score,
 identifies satisfied vs missing prerequisites, and provides clear explanations.
 """
 
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from deadline_guardian.models import (
     EligibilityCheckResult,
     EligibilityStatus,
@@ -82,7 +82,7 @@ class EligibilityMatcher:
             opp_title=opportunity.title,
             matched=matched,
             missing=missing,
-            profile=profile
+            profile=profile,
         )
 
         return EligibilityCheckResult(
@@ -97,7 +97,10 @@ class EligibilityMatcher:
         )
 
     @classmethod
-    def _check_course(cls, student_course: str, eligible_courses: List[str]) -> Tuple[float, str, str]:
+    def _check_course(cls, student_course: Optional[str], eligible_courses: List[str]) -> Tuple[float, str, str]:
+        if not student_course:
+            return 25.0, "Degree field not specified by student (assumed open / requires self-check)", "Verify specific degree prerequisites"
+
         if not eligible_courses or any(c.lower() in ("any", "all", "unspecified") for c in eligible_courses):
             return 35.0, f"Open to all degrees (Student is studying {student_course})", ""
 
@@ -122,7 +125,10 @@ class EligibilityMatcher:
         return 5.0, "", f"Course Mismatch: Opportunity lists {eligible_courses}, student is enrolled in '{student_course}'."
 
     @classmethod
-    def _check_year(cls, student_year: str, eligible_years: List[str]) -> Tuple[float, str, str]:
+    def _check_year(cls, student_year: Optional[str], eligible_years: List[str]) -> Tuple[float, str, str]:
+        if not student_year:
+            return 20.0, "Academic year not specified by student (assumed open / requires self-check)", "Verify specific academic year prerequisites"
+
         if not eligible_years or any(y.lower() in ("any", "all", "unspecified") for y in eligible_years):
             return 30.0, f"Open to any academic year (Student is in {student_year})", ""
 
@@ -141,8 +147,11 @@ class EligibilityMatcher:
         return 5.0, "", f"Academic Year Gap: Opportunity targets {eligible_years}, student is currently in '{student_year}'."
 
     @classmethod
-    def _check_location(cls, student_loc: str, opp_loc: str) -> Tuple[float, str, str]:
+    def _check_location(cls, student_loc: Optional[str], opp_loc: str) -> Tuple[float, str, str]:
         opp_lower = opp_loc.lower()
+        if not student_loc:
+            return 15.0, "Location not specified by student (assumed eligible for global/remote)", ""
+
         stu_lower = student_loc.lower()
 
         if "global" in opp_lower or "remote" in opp_lower:

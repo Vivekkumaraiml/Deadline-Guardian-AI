@@ -104,3 +104,21 @@ Copy-Item .env.example .env
 ```powershell
 .\.venv\Scripts\python.exe run_agent.py
 ```
+
+### Step 5: Launch the Fetch.ai Autonomous Agent for Agentverse / ASI:One
+
+To run in Agentverse Mailbox mode so ASI:One and Agentverse can reach your local agent:
+
+```powershell
+.\.venv\Scripts\python.exe run_agent.py --mailbox
+```
+
+---
+
+## 📅 Personal Deadline Tracking & Notification Notice
+
+Deadline Guardian AI supports conversational deadline tracking:
+- **User-Stated Deadlines:** Ingests deadlines directly from student prompts (e.g., *"I have a scholarship form due on the 15th and two internship applications due at the end of the month"*).
+- **Days-Remaining Alerts & Urgency Scoring:** Resolves relative dates and marks urgent items (`🔴 CRITICAL (< 7 days)`, `🟡 UPCOMING (7-30 days)`).
+- **Prioritized Action Checklists:** Breaks down document gathering, resume tailoring, and submission steps.
+- **Reminder Scope & Limitations:** As an on-demand AI agent, Deadline Guardian provides real-time scheduling, countdown alerts, and checklists during the active chat session. It does not send persistent background push alarms across disconnected sessions; students are guided to add the resolved dates directly to their personal calendars (Google Calendar / Apple Reminders).

@@ -42,16 +42,42 @@ class UrgencyLevel(str, Enum):
 
 class StudentProfile(BaseModel):
     """Profile data representing a student searching for opportunities."""
-    course: str = Field(..., description="Field of study or degree, e.g. 'Computer Science', 'Mechanical Engineering'")
-    year_of_study: str = Field(..., description="Current year of college, e.g. '1st Year', '2nd Year', '3rd Year', 'Final Year'")
+    course: Optional[str] = Field(default=None, description="Field of study or degree, e.g. 'Computer Science', 'Mechanical Engineering'")
+    year_of_study: Optional[str] = Field(default=None, description="Current year of college, e.g. '1st Year', '2nd Year', '3rd Year', 'Final Year'")
     interests: List[str] = Field(default_factory=list, description="Keywords or topics of interest, e.g. ['AI/ML', 'Web3', 'Open Source']")
-    location: str = Field(default="Global", description="Student current country or residency, e.g. 'India', 'USA', 'Remote'")
+    location: Optional[str] = Field(default=None, description="Student current country or residency, e.g. 'India', 'USA', 'Remote'")
     opportunity_type: OpportunityType = Field(default=OpportunityType.ALL, description="Filter: scholarship, internship, hackathon, or all")
     cgpa_or_percentage: Optional[float] = Field(default=None, description="Current CGPA or grade percentage if available")
 
+    def has_user_specified_details(self) -> bool:
+        """Returns True if the user provided any personal profile information."""
+        return bool(self.course or self.year_of_study or self.location or self.interests or self.cgpa_or_percentage)
+
     def summary(self) -> str:
-        interests_str = ", ".join(self.interests) if self.interests else "General"
-        return f"{self.year_of_study} {self.course} in {self.location} | Interests: {interests_str} | Looking for: {self.opportunity_type.value}"
+        parts = []
+        if self.year_of_study:
+            parts.append(self.year_of_study)
+        else:
+            parts.append("[Year Unspecified]")
+
+        if self.course:
+            parts.append(self.course)
+        else:
+            parts.append("[Degree Unspecified]")
+
+        if self.location:
+            parts.append(f"in {self.location}")
+        else:
+            parts.append("in [Location Unspecified]")
+
+        if self.interests:
+            parts.append(f"| Interests: {', '.join(self.interests)}")
+
+        if self.cgpa_or_percentage:
+            parts.append(f"| CGPA: {self.cgpa_or_percentage}")
+
+        parts.append(f"| Looking for: {self.opportunity_type.value}")
+        return " ".join(parts)
 
 
 class Opportunity(BaseModel):

@@ -28,9 +28,9 @@ class MockSearchProvider(BaseSearchProvider):
         matched: List[tuple[float, Opportunity]] = []
 
         target_type = profile.opportunity_type
-        student_course = profile.course.lower()
-        student_location = profile.location.lower()
-        student_year = profile.year_of_study.lower()
+        student_course = (profile.course or "").lower()
+        student_location = (profile.location or "").lower()
+        student_year = (profile.year_of_study or "").lower()
         interests = [i.lower() for i in profile.interests]
         kw_term = (keywords or "").lower()
 
@@ -47,7 +47,7 @@ class MockSearchProvider(BaseSearchProvider):
 
             # 2. Location matching
             opp_loc = opp.location.lower()
-            if "global" in opp_loc or "remote" in opp_loc:
+            if not student_location or "global" in opp_loc or "remote" in opp_loc:
                 score += 15.0
             elif any(token in opp_loc for token in student_location.split()):
                 score += 25.0
@@ -56,7 +56,7 @@ class MockSearchProvider(BaseSearchProvider):
 
             # 3. Course matching
             opp_courses = [c.lower() for c in opp.eligible_courses]
-            if "any" in opp_courses:
+            if not student_course or "any" in opp_courses:
                 score += 15.0
             elif any(c in student_course or student_course in c for c in opp_courses):
                 score += 25.0
@@ -67,7 +67,7 @@ class MockSearchProvider(BaseSearchProvider):
 
             # 4. Year matching
             opp_years = [y.lower() for y in opp.eligible_years]
-            if not opp_years or any(y in student_year or student_year in y for y in opp_years):
+            if not student_year or not opp_years or any(y in student_year or student_year in y for y in opp_years):
                 score += 15.0
 
             # 5. Interests / Keywords matching
